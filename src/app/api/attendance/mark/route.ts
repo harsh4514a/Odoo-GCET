@@ -66,16 +66,32 @@ export async function POST(request: NextRequest) {
     }
 
     if (attendance.checkInTime && attendance.checkOutTime) {
-      return NextResponse.json(
-        { error: 'Already checked out for today', attendance },
-        { status: 400 }
-      );
+      // Allow user to check in again - reset for a new session
+      attendance.checkInTime = now;
+      attendance.checkOutTime = null;
+      attendance.workHours = 0;
+      attendance.status = 'Present';
+      await attendance.save();
+
+      return NextResponse.json({
+        message: 'Checked in again successfully',
+        attendance,
+        action: 'check-in',
+      });
     }
 
-    return NextResponse.json(
-      { error: 'Invalid attendance state' },
-      { status: 400 }
-    );
+    // Fallback: Create a new check-in
+    attendance.checkInTime = now;
+    attendance.checkOutTime = null;
+    attendance.workHours = 0;
+    attendance.status = 'Present';
+    await attendance.save();
+
+    return NextResponse.json({
+      message: 'Checked in successfully',
+      attendance,
+      action: 'check-in',
+    });
   } catch (error) {
     console.error('Attendance mark error:', error);
     return NextResponse.json(

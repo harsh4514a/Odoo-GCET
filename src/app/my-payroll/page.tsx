@@ -25,6 +25,140 @@ import { Button } from '@/components/ui/button';
 export default function MyPayrollPage() {
   const { user } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const downloadPayslip = async () => {
+    if (!user) return;
+    
+    setIsDownloading(true);
+    
+    try {
+      const salary = user.salary;
+      const currentMonth = format(new Date(), 'MMMM yyyy');
+      const grossSalary = salary.basicSalary + salary.hra + salary.transportAllowance + salary.medicalAllowance + salary.otherAllowances;
+      const totalDeductions = salary.taxDeduction + salary.pfDeduction + salary.otherDeductions;
+
+      // Create payslip HTML content
+      const payslipContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <title>Payslip - ${currentMonth}</title>
+          <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; background: #fff; color: #1e293b; }
+            .header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #7c3aed; }
+            .company-name { font-size: 28px; font-weight: bold; color: #7c3aed; margin-bottom: 5px; }
+            .payslip-title { font-size: 16px; color: #64748b; }
+            .payslip-month { font-size: 18px; font-weight: 600; color: #1e293b; margin-top: 10px; }
+            .employee-info { display: flex; justify-content: space-between; margin-bottom: 30px; padding: 20px; background: #f8fafc; border-radius: 8px; }
+            .info-group { }
+            .info-label { font-size: 12px; color: #64748b; margin-bottom: 4px; }
+            .info-value { font-size: 14px; font-weight: 600; color: #1e293b; }
+            .salary-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+            .salary-table th { background: #7c3aed; color: white; padding: 12px; text-align: left; font-size: 14px; }
+            .salary-table td { padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
+            .salary-table tr:last-child td { border-bottom: none; }
+            .amount { text-align: right; font-weight: 600; }
+            .section-title { font-size: 16px; font-weight: 600; margin: 20px 0 10px 0; color: #1e293b; }
+            .totals { display: flex; justify-content: space-between; padding: 20px; background: linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%); border-radius: 8px; color: white; margin-top: 30px; }
+            .total-item { text-align: center; }
+            .total-label { font-size: 12px; opacity: 0.9; margin-bottom: 4px; }
+            .total-value { font-size: 24px; font-weight: bold; }
+            .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 12px; color: #64748b; }
+            @media print { body { padding: 20px; } }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="company-name">✨ Dayflow</div>
+            <div class="payslip-title">Employee Payslip</div>
+            <div class="payslip-month">${currentMonth}</div>
+          </div>
+          
+          <div class="employee-info">
+            <div class="info-group">
+              <div class="info-label">Employee Name</div>
+              <div class="info-value">${user.profile.firstName} ${user.profile.lastName}</div>
+            </div>
+            <div class="info-group">
+              <div class="info-label">Employee ID</div>
+              <div class="info-value">${user.employeeId}</div>
+            </div>
+            <div class="info-group">
+              <div class="info-label">Department</div>
+              <div class="info-value">${user.profile.department}</div>
+            </div>
+            <div class="info-group">
+              <div class="info-label">Designation</div>
+              <div class="info-value">${user.profile.jobTitle}</div>
+            </div>
+          </div>
+
+          <div class="section-title">💰 Earnings</div>
+          <table class="salary-table">
+            <tr><th>Component</th><th style="text-align: right;">Amount (₹)</th></tr>
+            <tr><td>Basic Salary</td><td class="amount">${salary.basicSalary.toLocaleString('en-IN')}</td></tr>
+            <tr><td>House Rent Allowance (HRA)</td><td class="amount">${salary.hra.toLocaleString('en-IN')}</td></tr>
+            <tr><td>Transport Allowance</td><td class="amount">${salary.transportAllowance.toLocaleString('en-IN')}</td></tr>
+            <tr><td>Medical Allowance</td><td class="amount">${salary.medicalAllowance.toLocaleString('en-IN')}</td></tr>
+            <tr><td>Other Allowances</td><td class="amount">${salary.otherAllowances.toLocaleString('en-IN')}</td></tr>
+            <tr style="background: #f0fdf4;"><td><strong>Gross Salary</strong></td><td class="amount"><strong>${grossSalary.toLocaleString('en-IN')}</strong></td></tr>
+          </table>
+
+          <div class="section-title">📉 Deductions</div>
+          <table class="salary-table">
+            <tr><th>Component</th><th style="text-align: right;">Amount (₹)</th></tr>
+            <tr><td>Income Tax (TDS)</td><td class="amount">${salary.taxDeduction.toLocaleString('en-IN')}</td></tr>
+            <tr><td>Provident Fund (PF)</td><td class="amount">${salary.pfDeduction.toLocaleString('en-IN')}</td></tr>
+            <tr><td>Other Deductions</td><td class="amount">${salary.otherDeductions.toLocaleString('en-IN')}</td></tr>
+            <tr style="background: #fef2f2;"><td><strong>Total Deductions</strong></td><td class="amount"><strong>${totalDeductions.toLocaleString('en-IN')}</strong></td></tr>
+          </table>
+
+          <div class="totals">
+            <div class="total-item">
+              <div class="total-label">Gross Earnings</div>
+              <div class="total-value">₹${grossSalary.toLocaleString('en-IN')}</div>
+            </div>
+            <div class="total-item">
+              <div class="total-label">Total Deductions</div>
+              <div class="total-value">₹${totalDeductions.toLocaleString('en-IN')}</div>
+            </div>
+            <div class="total-item">
+              <div class="total-label">Net Payable</div>
+              <div class="total-value">₹${salary.netSalary.toLocaleString('en-IN')}</div>
+            </div>
+          </div>
+
+          <div class="footer">
+            <p>This is a computer-generated payslip and does not require a signature.</p>
+            <p style="margin-top: 5px;">Generated on ${format(new Date(), 'dd MMM yyyy, hh:mm a')}</p>
+          </div>
+        </body>
+        </html>
+      `;
+
+      // Create a Blob with the HTML content
+      const blob = new Blob([payslipContent], { type: 'text/html' });
+      
+      // Create a new window for printing
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write(payslipContent);
+        printWindow.document.close();
+        
+        // Wait for content to load then trigger print
+        printWindow.onload = () => {
+          printWindow.print();
+        };
+      }
+    } catch (error) {
+      console.error('Error generating payslip:', error);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   if (!user) {
     return (
@@ -74,9 +208,17 @@ export default function MyPayrollPage() {
             <h1 className="text-3xl font-bold text-slate-900">My Payroll</h1>
             <p className="text-slate-500 mt-1">View your salary details and payslips</p>
           </div>
-          <Button className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl">
-            <Download className="w-4 h-4 mr-2" />
-            Download Payslip
+          <Button 
+            className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl"
+            onClick={downloadPayslip}
+            disabled={isDownloading}
+          >
+            {isDownloading ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Download className="w-4 h-4 mr-2" />
+            )}
+            {isDownloading ? 'Generating...' : 'Download Payslip'}
           </Button>
         </motion.div>
 

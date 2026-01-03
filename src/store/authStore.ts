@@ -49,13 +49,6 @@ interface AuthState {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (data: {
-    employeeId: string;
-    email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-  }) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
   updateUser: (user: User) => void;
@@ -80,26 +73,6 @@ export const useAuthStore = create<AuthState>((set) => ({
 
     const data = await response.json();
     
-    // Fetch full user data
-    const userResponse = await fetch('/api/auth/me');
-    if (userResponse.ok) {
-      const userData = await userResponse.json();
-      set({ user: userData.user, isAuthenticated: true, isLoading: false });
-    }
-  },
-
-  register: async (data) => {
-    const response = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Registration failed');
-    }
-
     // Fetch full user data
     const userResponse = await fetch('/api/auth/me');
     if (userResponse.ok) {

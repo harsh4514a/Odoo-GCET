@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { format, startOfMonth, endOfMonth } from 'date-fns';
+import { format, startOfMonth, endOfMonth, parseISO } from 'date-fns';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Table,
@@ -24,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { CalendarCheck, Search, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { CalendarCheck, Search, ChevronLeft, ChevronRight, Loader2, Calendar, X } from 'lucide-react';
 
 interface AttendanceRecord {
   _id: string;
@@ -61,16 +62,26 @@ export default function AttendancePage() {
   const [selectedEmployee, setSelectedEmployee] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState<string>('');
+  const [filterMode, setFilterMode] = useState<'month' | 'date'>('month');
 
   useEffect(() => {
     fetchData();
-  }, [currentMonth, selectedEmployee]);
+  }, [currentMonth, selectedEmployee, selectedDate, filterMode]);
 
   const fetchData = async () => {
     try {
       setIsLoading(true);
-      const startDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
-      const endDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
+      let startDate: string;
+      let endDate: string;
+
+      if (filterMode === 'date' && selectedDate) {
+        startDate = selectedDate;
+        endDate = selectedDate;
+      } else {
+        startDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
+        endDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
+      }
 
       const [employeesRes, attendanceRes] = await Promise.all([
         fetch('/api/employees'),
@@ -199,36 +210,95 @@ export default function AttendancePage() {
         <motion.div variants={itemVariants}>
           <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl">
             <CardContent className="p-4">
-              <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-                <div className="flex items-center gap-4">
+              <div className="flex flex-col gap-4">
+                {/* Filter Mode Toggle */}
+                <div className="flex items-center gap-2">
                   <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() =>
-                      setCurrentMonth(
-                        new Date(currentMonth.setMonth(currentMonth.getMonth() - 1))
-                      )
-                    }
-                    className="rounded-lg"
+                    variant={filterMode === 'month' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => {
+                      setFilterMode('month');
+                      setSelectedDate('');
+                    }}
+                    className={`rounded-xl ${filterMode === 'month' ? 'bg-gradient-to-r from-purple-600 to-blue-600' : ''}`}
                   >
-                    <ChevronLeft className="w-5 h-5" />
+                    <Calendar className="w-4 h-4 mr-2" />
+                    Monthly View
                   </Button>
-                  <span className="text-lg font-semibold text-slate-900 min-w-[150px] text-center">
-                    {format(currentMonth, 'MMMM yyyy')}
-                  </span>
                   <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() =>
-                      setCurrentMonth(
-                        new Date(currentMonth.setMonth(currentMonth.getMonth() + 1))
-                      )
-                    }
-                    className="rounded-lg"
+                    variant={filterMode === 'date' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setFilterMode('date')}
+                    className={`rounded-xl ${filterMode === 'date' ? 'bg-gradient-to-r from-purple-600 to-blue-600' : ''}`}
                   >
-                    <ChevronRight className="w-5 h-5" />
+                    <CalendarCheck className="w-4 h-4 mr-2" />
+                    Specific Date
                   </Button>
                 </div>
+
+                <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+                  {/* Month Navigation or Date Picker */}
+                  {filterMode === 'month' ? (
+                    <div className="flex items-center gap-4">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() =>
+                          setCurrentMonth(
+                            new Date(currentMonth.setMonth(currentMonth.getMonth() - 1))
+                          )
+                        }
+                        className="rounded-lg"
+                      >
+                        <ChevronLeft className="w-5 h-5" />
+                      </Button>
+                      <span className="text-lg font-semibold text-slate-900 min-w-[150px] text-center">
+                        {format(currentMonth, 'MMMM yyyy')}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() =>
+                          setCurrentMonth(
+                            new Date(currentMonth.setMonth(currentMonth.getMonth() + 1))
+                          )
+                        }
+                        className="rounded-lg"
+                      >
+                        <ChevronRight className="w-5 h-5" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="date-filter" className="text-sm font-medium text-slate-700">
+                          Select Date:
+                        </Label>
+                        <Input
+                          id="date-filter"
+                          type="date"
+                          value={selectedDate}
+                          onChange={(e) => setSelectedDate(e.target.value)}
+                          className="w-44 rounded-xl"
+                        />
+                      </div>
+                      {selectedDate && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setSelectedDate('')}
+                          className="rounded-lg text-slate-500 hover:text-slate-700"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      )}
+                      {selectedDate && (
+                        <span className="text-sm text-slate-600">
+                          Showing: {format(parseISO(selectedDate), 'EEEE, MMMM d, yyyy')}
+                        </span>
+                      )}
+                    </div>
+                  )}
 
                 <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
                   <div className="relative flex-1 sm:w-64">
@@ -253,6 +323,7 @@ export default function AttendancePage() {
                       ))}
                     </SelectContent>
                   </Select>
+                </div>
                 </div>
               </div>
             </CardContent>

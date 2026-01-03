@@ -54,10 +54,15 @@ interface Employee {
     department: string;
     profilePicture: string;
   };
-  salaryStructure: {
-    basic: number;
-    allowances: number;
-    deductions: number;
+  salary: {
+    basicSalary: number;
+    hra: number;
+    transportAllowance: number;
+    medicalAllowance: number;
+    otherAllowances: number;
+    pfDeduction: number;
+    taxDeduction: number;
+    otherDeductions: number;
     netSalary: number;
   };
   leaveBalance: {
@@ -543,31 +548,84 @@ export default function EmployeeDetailPage() {
                   Salary Structure
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="p-4 bg-green-50 rounded-xl">
-                    <p className="text-sm text-green-600 mb-1">Basic Salary</p>
-                    <p className="text-2xl font-bold text-green-700">
-                      ₹{employee.salaryStructure.basic.toLocaleString()}
-                    </p>
+              <CardContent className="space-y-6">
+                {/* Earnings */}
+                <div>
+                  <h4 className="text-sm font-semibold text-slate-700 mb-3">Earnings</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div className="p-4 bg-green-50 rounded-xl">
+                      <p className="text-sm text-green-600 mb-1">Basic Salary</p>
+                      <p className="text-xl font-bold text-green-700">
+                        ₹{employee.salary?.basicSalary?.toLocaleString('en-IN') || 0}
+                      </p>
+                    </div>
+                    <div className="p-4 bg-green-50 rounded-xl">
+                      <p className="text-sm text-green-600 mb-1">HRA</p>
+                      <p className="text-xl font-bold text-green-700">
+                        ₹{employee.salary?.hra?.toLocaleString('en-IN') || 0}
+                      </p>
+                    </div>
+                    <div className="p-4 bg-green-50 rounded-xl">
+                      <p className="text-sm text-green-600 mb-1">Transport</p>
+                      <p className="text-xl font-bold text-green-700">
+                        ₹{employee.salary?.transportAllowance?.toLocaleString('en-IN') || 0}
+                      </p>
+                    </div>
+                    <div className="p-4 bg-green-50 rounded-xl">
+                      <p className="text-sm text-green-600 mb-1">Medical</p>
+                      <p className="text-xl font-bold text-green-700">
+                        ₹{employee.salary?.medicalAllowance?.toLocaleString('en-IN') || 0}
+                      </p>
+                    </div>
+                    <div className="p-4 bg-green-50 rounded-xl">
+                      <p className="text-sm text-green-600 mb-1">Other Allowances</p>
+                      <p className="text-xl font-bold text-green-700">
+                        ₹{employee.salary?.otherAllowances?.toLocaleString('en-IN') || 0}
+                      </p>
+                    </div>
                   </div>
-                  <div className="p-4 bg-blue-50 rounded-xl">
-                    <p className="text-sm text-blue-600 mb-1">Allowances</p>
-                    <p className="text-2xl font-bold text-blue-700">
-                      ₹{employee.salaryStructure.allowances.toLocaleString()}
-                    </p>
+                </div>
+
+                {/* Deductions */}
+                <div>
+                  <h4 className="text-sm font-semibold text-slate-700 mb-3">Deductions</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div className="p-4 bg-red-50 rounded-xl">
+                      <p className="text-sm text-red-600 mb-1">PF Deduction</p>
+                      <p className="text-xl font-bold text-red-700">
+                        ₹{employee.salary?.pfDeduction?.toLocaleString('en-IN') || 0}
+                      </p>
+                    </div>
+                    <div className="p-4 bg-red-50 rounded-xl">
+                      <p className="text-sm text-red-600 mb-1">Tax (TDS)</p>
+                      <p className="text-xl font-bold text-red-700">
+                        ₹{employee.salary?.taxDeduction?.toLocaleString('en-IN') || 0}
+                      </p>
+                    </div>
+                    <div className="p-4 bg-red-50 rounded-xl">
+                      <p className="text-sm text-red-600 mb-1">Other Deductions</p>
+                      <p className="text-xl font-bold text-red-700">
+                        ₹{employee.salary?.otherDeductions?.toLocaleString('en-IN') || 0}
+                      </p>
+                    </div>
                   </div>
-                  <div className="p-4 bg-red-50 rounded-xl">
-                    <p className="text-sm text-red-600 mb-1">Deductions</p>
-                    <p className="text-2xl font-bold text-red-700">
-                      ₹{employee.salaryStructure.deductions.toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="p-4 bg-purple-50 rounded-xl border-2 border-purple-200">
-                    <p className="text-sm text-purple-600 mb-1">Net Salary</p>
-                    <p className="text-2xl font-bold text-purple-700">
-                      ₹{employee.salaryStructure.netSalary.toLocaleString()}
-                    </p>
+                </div>
+
+                {/* Net Salary */}
+                <div className="p-6 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl border-2 border-purple-200">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-purple-600 mb-1">Net Salary (Monthly)</p>
+                      <p className="text-3xl font-bold text-purple-700">
+                        ₹{employee.salary?.netSalary?.toLocaleString('en-IN') || 0}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm text-blue-600 mb-1">Annual CTC</p>
+                      <p className="text-xl font-bold text-blue-700">
+                        ₹{((employee.salary?.netSalary || 0) * 12).toLocaleString('en-IN')}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </CardContent>

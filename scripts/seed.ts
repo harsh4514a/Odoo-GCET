@@ -19,8 +19,23 @@ const jobTitles = [
   'Product Manager',
 ];
 
-const firstNames = ['John', 'Sarah', 'Michael', 'Emily', 'David', 'Jessica', 'Robert', 'Ashley'];
-const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis'];
+// Indian names
+const firstNames = ['Aarav', 'Vivaan', 'Aditya', 'Vihaan', 'Arjun', 'Reyansh', 'Sai', 'Ayaan', 'Krishna', 'Ishaan', 'Priya', 'Ananya', 'Aadhya', 'Saanvi', 'Diya', 'Anika', 'Kavya', 'Riya', 'Isha', 'Neha'];
+const lastNames = ['Sharma', 'Verma', 'Gupta', 'Singh', 'Kumar', 'Patel', 'Reddy', 'Nair', 'Iyer', 'Rao', 'Joshi', 'Malhotra', 'Kapoor', 'Mehta', 'Desai'];
+
+// Indian cities for addresses
+const indianCities = [
+  { city: 'Mumbai', state: 'Maharashtra', pincode: '400001' },
+  { city: 'Delhi', state: 'Delhi', pincode: '110001' },
+  { city: 'Bangalore', state: 'Karnataka', pincode: '560001' },
+  { city: 'Hyderabad', state: 'Telangana', pincode: '500001' },
+  { city: 'Chennai', state: 'Tamil Nadu', pincode: '600001' },
+  { city: 'Pune', state: 'Maharashtra', pincode: '411001' },
+  { city: 'Kolkata', state: 'West Bengal', pincode: '700001' },
+  { city: 'Ahmedabad', state: 'Gujarat', pincode: '380001' },
+  { city: 'Jaipur', state: 'Rajasthan', pincode: '302001' },
+  { city: 'Noida', state: 'Uttar Pradesh', pincode: '201301' },
+];
 
 const banks = ['HDFC Bank', 'ICICI Bank', 'State Bank of India', 'Axis Bank', 'Kotak Mahindra'];
 
@@ -59,10 +74,10 @@ async function seed() {
       password: hashedPassword,
       role: 'Admin',
       profile: {
-        firstName: 'Admin',
-        lastName: 'User',
-        phone: '+1 (555) 000-0001',
-        address: '123 Admin Street, Tech City, TC 12345',
+        firstName: 'Rajesh',
+        lastName: 'Sharma',
+        phone: '+91 98765 43210',
+        address: '123 MG Road, Connaught Place, New Delhi, Delhi 110001',
         jobTitle: 'System Administrator',
         department: 'Administration',
         profilePicture: '',
@@ -100,6 +115,7 @@ async function seed() {
       const department = departments[i % departments.length];
       const jobTitle = jobTitles[i % jobTitles.length];
       const basicSalary = 50000 + i * 8000;
+      const cityInfo = getRandomElement(indianCities);
 
       const employee = await User.create({
         employeeId: `EMP${String(i + 2).padStart(3, '0')}`,
@@ -109,8 +125,8 @@ async function seed() {
         profile: {
           firstName,
           lastName,
-          phone: `+1 (555) ${String(100 + i).padStart(3, '0')}-${String(1000 + i * 111).slice(0, 4)}`,
-          address: `${100 + i * 10} Employee Ave, Work City, WC ${10000 + i}`,
+          phone: `+91 ${97000 + Math.floor(Math.random() * 2000)} ${10000 + Math.floor(Math.random() * 89999)}`,
+          address: `${100 + i * 10} ${['Sector', 'Block', 'Lane', 'Colony'][i % 4]} ${i + 1}, ${cityInfo.city}, ${cityInfo.state} ${cityInfo.pincode}`,
           jobTitle,
           department,
           profilePicture: '',

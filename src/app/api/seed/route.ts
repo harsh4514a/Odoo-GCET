@@ -15,8 +15,19 @@ const jobTitles = [
   'Operations Lead',
 ];
 
-const firstNames = ['John', 'Sarah', 'Michael', 'Emily', 'David'];
-const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones'];
+// Indian names
+const firstNames = ['Aarav', 'Priya', 'Vihaan', 'Ananya', 'Arjun'];
+const lastNames = ['Sharma', 'Verma', 'Gupta', 'Patel', 'Singh'];
+
+// Indian cities
+const indianCities = [
+  { city: 'Mumbai', state: 'Maharashtra', pincode: '400001' },
+  { city: 'Delhi', state: 'Delhi', pincode: '110001' },
+  { city: 'Bangalore', state: 'Karnataka', pincode: '560001' },
+  { city: 'Hyderabad', state: 'Telangana', pincode: '500001' },
+  { city: 'Pune', state: 'Maharashtra', pincode: '411001' },
+];
+
 const banks = ['HDFC Bank', 'ICICI Bank', 'State Bank of India', 'Axis Bank', 'Kotak Mahindra'];
 
 function getRandomElement<T>(arr: T[]): T {
@@ -52,10 +63,10 @@ export async function GET() {
       password: hashedPassword,
       role: 'Admin',
       profile: {
-        firstName: 'Admin',
-        lastName: 'User',
-        phone: '+1 (555) 000-0001',
-        address: '123 Admin Street, Tech City, TC 12345',
+        firstName: 'Rajesh',
+        lastName: 'Sharma',
+        phone: '+91 98765 43210',
+        address: '123 MG Road, Connaught Place, New Delhi, Delhi 110001',
         jobTitle: 'System Administrator',
         department: 'Administration',
         profilePicture: '',
@@ -92,6 +103,7 @@ export async function GET() {
       const department = departments[i];
       const jobTitle = jobTitles[i];
       const basicSalary = 50000 + i * 8000;
+      const cityInfo = indianCities[i];
 
       const employee = await User.create({
         employeeId: `EMP${String(i + 2).padStart(3, '0')}`,
@@ -101,8 +113,8 @@ export async function GET() {
         profile: {
           firstName,
           lastName,
-          phone: `+1 (555) ${String(100 + i).padStart(3, '0')}-${String(1000 + i * 111).slice(0, 4)}`,
-          address: `${100 + i * 10} Employee Ave, Work City, WC ${10000 + i}`,
+          phone: `+91 ${97000 + Math.floor(Math.random() * 2000)} ${10000 + Math.floor(Math.random() * 89999)}`,
+          address: `${100 + i * 10} ${['Sector', 'Block', 'Lane', 'Colony', 'Nagar'][i]} ${i + 1}, ${cityInfo.city}, ${cityInfo.state} ${cityInfo.pincode}`,
           jobTitle,
           department,
           profilePicture: '',
