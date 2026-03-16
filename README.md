@@ -1,36 +1,95 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🧑‍💼 HRMS – Human Resource Management System
 
-## Getting Started
+A web-based **Human Resource Management System (HRMS)** developed during the **Odoo Hackathon** to streamline HR operations such as employee management, attendance tracking, and leave management within an organization.
 
-First, run the development server:
+The system helps HR departments manage employee records efficiently while providing dashboards and automation for common HR tasks.
+
+---
+
+## 🚀 Features
+
+### 👤 Employee Management
+
+* Add, update, and manage employee profiles
+* Store employee details such as department, role, and contact information
+* Centralized employee database
+
+### 🕒 Attendance Management
+
+* Track daily employee attendance
+* Monitor working hours and presence records
+
+### 📅 Leave Management
+
+* Employees can request leave
+* Admin/HR can approve or reject leave requests
+* Leave history tracking
+
+### 🏢 Department Management
+
+* Manage organizational departments
+* Assign employees to departments
+
+### 📊 HR Dashboard
+
+* Overview of company workforce
+* View total employees, attendance reports, and leave requests
+
+---
+
+## 🛠 Tech Stack
+
+**Frontend**
+
+* React.js
+* HTML
+* CSS
+
+**Backend**
+
+* Python
+* Odoo Framework
+
+**Database**
+
+* PostgreSQL
+
+**Tools**
+
+* Git
+* GitHub
+
+---
+
+## 🏗 System Architecture
+
+User → Frontend Interface → Backend Server → Database
+
+* The frontend allows employees and HR to interact with the system.
+* The backend processes requests and manages business logic.
+* The database stores employee, attendance, and leave data.
+
+---
+
+
+## ⚙️ Installation
+
+Clone the repository:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/your-username/hrms-odoo-hackathon.git
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Navigate to project directory:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+cd hrms-odoo-hackathon
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Install dependencies and start the server.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🎯 Project Objective
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The objective of this project is to **automate HR processes** and provide a centralized platform for managing employee information, attendance, and leave management efficiently.
